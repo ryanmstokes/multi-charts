@@ -18,6 +18,8 @@ import {
   lowerLinePoints,
   averageSlopeLine,
 } from "./mock-data";
+import styles from "@/components/Chart/style.module.css";
+import { chartData } from "@/components/Chart/utils/generate-data";
 
 // Register the Chart plugins
 ChartJS.register(
@@ -33,7 +35,7 @@ const SimpleEKGChart = () => {
   const chartWidth = 780; // Width of the chart in pixels
   const xRange = 20; // Range of x-values (1 to 20)
   const scalingFactor = chartWidth / xRange; // Scaling factor in pixels per unit
-  const predictiveMaxValue = (19).toFixed(2); // Example value
+  const predictiveMaxValue = (17).toFixed(2); // Example value
   const [minRange, setMinRange] = useState(5); // Initial x-value positin for minimum range
   const [maxRange, setMaxRange] = useState(15); // Initial x-value position for maximum range
 
@@ -52,47 +54,12 @@ const SimpleEKGChart = () => {
     setMaxRangeValue(newX); // Update displayed value
   };
 
-  const data = {
-    labels: Array.from({ length: 20 }, (_, i) => i + 1),
-    datasets: [
-      {
-        label: "Test Result",
-        data: mainDataset,
-        borderColor: "blue",
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        borderWidth: 2,
-        fill: false,
-      },
-      {
-        label: "Average Test Result",
-        data: averageSlopeLine,
-        borderColor: "black",
-        backgroundColor: "rgba(255, 0, 0, 0.2)",
-        borderWidth: 2,
-        fill: false,
-        pointStyle: "none", // Hide the points,
-        pointRadius: 0,
-      },
-      {
-        label: "Upper Line",
-        data: upperLinePoints,
-        borderColor: "rgba(0, 255, 0, 0.5)",
-        borderWidth: 4,
-        borderDash: [10, 5],
-        fill: 3, // Fill between upper line and lower line
-        backgroundColor: "rgba(255, 0, 0, 0.2)",
-      },
-      {
-        label: "Lower Line",
-        data: lowerLinePoints,
-        borderColor: "rgba(255, 0, 0, 0.5)",
-        borderWidth: 2,
-        borderDash: [10, 5],
-        fill: false, // Fill between lower line and upper line
-        backgroundColor: "rgba(122, 0, 0, 0.5)",
-      },
-    ],
-  };
+  const data = chartData(
+    mainDataset,
+    averageSlopeLine,
+    upperLinePoints,
+    lowerLinePoints
+  );
 
   const options = {
     scales: {
@@ -124,19 +91,19 @@ const SimpleEKGChart = () => {
             borderDash: [10, 5],
             label: {
               display: true,
-              content: "pred. max.",
+              content: "max",
               enabled: true,
               position: "start",
               backgroundColor: "rgba(0, 0, 0, 0.7)",
               color: "rgba(255, 255, 255, 1)",
               xAdjust: 10,
-              yAdjust: -10,
+              yAdjust: 20,
             },
           },
           label2: {
             type: "label",
             display: true,
-            content: "Slope" + predictiveMaxValue,
+            content: predictiveMaxValue,
             enabled: true,
             position: "end",
             xValue: data.labels.length - 1,
@@ -152,20 +119,10 @@ const SimpleEKGChart = () => {
   };
 
   return (
-    <div style={{ width: "800px", position: "relative" }}>
-      <h2>Simple EKG Chart</h2>
+    <div className={styles.chart}>
+      <h2>Complex Chart</h2>
       <Line data={data} options={options} />
-      <div
-        style={{
-          width: "737px",
-          position: "absolute",
-          height: "88.5%",
-          top: "20px",
-          left: "46px",
-          bottom: 0,
-          right: 0,
-        }}
-      >
+      <div className={styles.handles}>
         <Draggable
           axis="x"
           bounds="parent"
@@ -175,31 +132,8 @@ const SimpleEKGChart = () => {
             y: 0,
           }}
         >
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "40px",
-              height: "100%",
-              backgroundColor: "none",
-              borderLeft: "2px solid red",
-              cursor: "ew-resize",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: "-25px",
-                right: "11px",
-                color: "white",
-                padding: "2px 5px",
-                background: "black",
-                border: "1px solid black",
-              }}
-            >
-              LL
-            </div>
+          <div className={styles.handleWrap}>
+            <div className={styles.handle}>A</div>
             <div
               style={{
                 backgroundColor: "black",
@@ -218,31 +152,8 @@ const SimpleEKGChart = () => {
             y: 0,
           }}
         >
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "40px",
-              height: "100%",
-              backgroundColor: "none",
-              borderLeft: "2px solid red",
-              cursor: "ew-resize",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: "-25px",
-                right: "11px",
-                color: "white",
-                padding: "2px 5px",
-                background: "black",
-                border: "1px solid black",
-              }}
-            >
-              UL
-            </div>
+          <div className={styles.handleWrap}>
+            <div className={styles.handle}>B</div>
             <div
               style={{
                 backgroundColor: "black",
